@@ -9,7 +9,11 @@
           </div>
           <p class="result">{{ result.name }}</p>
           <div class="my-2" align="center">
-            <v-btn x-large color="success" dark @click="pressButton"
+            <v-btn
+              x-large
+              color="primary"
+              :disabled="filteredMenuList().length < 1"
+              @click="pressButton"
               >ガチャを回す</v-btn
             >
           </div>
@@ -17,7 +21,12 @@
         <v-expansion-panels>
           <v-expansion-panel>
             <v-expansion-panel-header>
-              <h2>絞り込み</h2>
+              <h2>
+                絞り込み
+                <span class="menu-count"
+                  >{{ filteredMenuList().length }} 件</span
+                >
+              </h2>
             </v-expansion-panel-header>
 
             <v-expansion-panel-content>
@@ -231,6 +240,11 @@ export default {
 </script>
 
 <style scoped>
+.menu-count {
+  font-size: 1rem;
+  font-weight: normal;
+}
+
 .image {
   height: 260px;
   width: 330px;
