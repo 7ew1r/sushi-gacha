@@ -1,23 +1,30 @@
 <template>
   <v-container>
     <h1>くらガチャ</h1>
-    <div>
-      <v-row>
-        <v-col cols="12" align="center">
-          <div class="image">
-            <img :src="result.imageURL" :alt="result.name" />
-          </div>
-          <p class="result">{{ result.name }}</p>
-          <div class="my-2" align="center">
-            <v-btn
-              x-large
-              color="primary"
-              :disabled="filteredMenuList().length < 1"
-              @click="pressButton"
-              >ガチャを回す</v-btn
-            >
-          </div>
-        </v-col>
+
+    <v-row>
+      <v-col cols="12" align="center">
+        <v-img
+          :src="result.imageURL"
+          :alt="result.name"
+          height="260"
+          width="330"
+        />
+
+        <p class="result">{{ result.name }}</p>
+        <div class="my-2" align="center">
+          <v-btn
+            x-large
+            color="primary"
+            :disabled="filteredMenuList().length < 1"
+            @click="pressButton"
+            >ガチャを回す</v-btn
+          >
+        </div>
+      </v-col>
+    </v-row>
+    <v-row>
+      <v-col cols="12">
         <v-expansion-panels>
           <v-expansion-panel>
             <v-expansion-panel-header>
@@ -62,47 +69,25 @@
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
+      </v-col>
+    </v-row>
 
-        <v-col v-if="histories.length > 0" cols="12">
-          <h2>履歴</h2>
-        </v-col>
+    <Summary v-if="histories.length > 0" :histories="histories" />
 
-        <v-col v-if="histories.length > 0" cols="12">
-          <v-simple-table>
-            <template v-slot:default>
-              <thead>
-                <tr>
-                  <th class="text-left">名前</th>
-                  <th class="text-left">価格</th>
-                  <th class="text-left">カロリー</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="history in histories" :key="history.no">
-                  <td>{{ history.menu.name }}</td>
-                  <td>{{ history.menu.price }} 円(税抜)</td>
-                  <td>{{ history.menu.calorie }} kcal</td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td></td>
-                  <td>{{ sumPrice() }} 円(税抜)</td>
-                  <td>{{ sumCalorie() }} kcal</td>
-                </tr>
-              </tfoot>
-            </template>
-          </v-simple-table>
-        </v-col>
-      </v-row>
-    </div>
+    <History v-if="histories.length > 0" :histories="histories" />
   </v-container>
 </template>
 
 <script>
 import menu from '../assets/output.json'
+import Summary from '../components/Summary.vue'
+import History from '../components/History.vue'
 
 export default {
+  components: {
+    Summary,
+    History,
+  },
   data() {
     return {
       count: 0,
