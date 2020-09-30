@@ -1,14 +1,14 @@
 <template>
   <v-container>
-    <h1>くらガチャ</h1>
+    <h1>スシローガチャ</h1>
 
     <v-row>
       <v-col cols="12" align="center">
         <v-img
           :src="result.imageURL"
           :alt="result.name"
-          max-height="260"
-          max-width="330"
+          height="260"
+          width="330"
         />
 
         <p class="result">{{ result.name }}</p>
@@ -47,7 +47,7 @@
                 :selectable="true"
               />
 
-              <v-col cols="12">
+              <!-- <v-col cols="12">
                 <h3>提供エリア</h3>
               </v-col>
 
@@ -55,7 +55,7 @@
                 v-model="checkedAreas"
                 :items="createAreaItems(areas)"
                 :selectable="true"
-              />
+              /> -->
 
               <v-col cols="12">
                 <h3>価格</h3>
@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import menu from '../assets/output.json'
+import menu from '../assets/sushiro.json'
 import Summary from '../components/Summary.vue'
 import History from '../components/History.vue'
 
@@ -94,9 +94,9 @@ export default {
       result: { name: '', imageURL: '' },
       menu,
       categories: [],
-      checkedCategories: [1, 2, 3, 4, 5, 6, 7],
-      areas: [],
-      checkedAreas: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      checkedCategories: [1, 2, 3, 4, 5, 6],
+      // areas: [],
+      // checkedAreas: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
       prices: ['100円', '101 〜 200円', '201円以上'],
       checkedPrices: [1, 2, 3],
       histories: [],
@@ -104,7 +104,7 @@ export default {
   },
   created() {
     this.categories = this.getCategories()
-    this.areas = this.getAreas()
+    // this.areas = this.getAreas()
   },
   methods: {
     getCategories() {
@@ -116,15 +116,15 @@ export default {
       })
       return [{ id: 0, name: '全カテゴリー', children }]
     },
-    getAreas() {
-      return Array.from(new Set(this.menu.map((item) => item.area)))
-    },
-    createAreaItems(areas) {
-      const children = areas.map(function (item, index) {
-        return { id: index + 1, name: item }
-      })
-      return [{ id: 0, name: '全提供エリア', children }]
-    },
+    // getAreas() {
+    //   return Array.from(new Set(this.menu.map((item) => item.area)))
+    // },
+    // createAreaItems(areas) {
+    //   const children = areas.map(function (item, index) {
+    //     return { id: index + 1, name: item }
+    //   })
+    //   return [{ id: 0, name: '全提供エリア', children }]
+    // },
     getPrices() {
       return Array.from(new Set(this.menu.map((item) => item.price)))
     },
@@ -138,9 +138,9 @@ export default {
       const selectedCategories = this.categories.filter((_, index) =>
         this.checkedCategories.includes(index + 1)
       )
-      const selectedAreas = this.areas.filter((_, index) =>
-        this.checkedAreas.includes(index + 1)
-      )
+      // const selectedAreas = this.areas.filter((_, index) =>
+      //   this.checkedAreas.includes(index + 1)
+      // )
       const selectedPrices = this.prices.filter((_, index) =>
         this.checkedPrices.includes(index + 1)
       )
@@ -179,7 +179,6 @@ export default {
 
       return menu
         .filter((item) => selectedCategories.includes(item.category))
-        .filter((item) => selectedAreas.includes(item.area))
         .filter((item) => filterByPrice(item.price))
     },
     pressButton() {
@@ -228,10 +227,6 @@ export default {
 .menu-count {
   font-size: 1rem;
   font-weight: normal;
-}
-
-.image {
-  max-height: 260px;
 }
 
 .result {
