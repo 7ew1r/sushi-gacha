@@ -32,7 +32,7 @@
 <script>
 export default {
   props: {
-    histories: { type: Object, default: () => {} },
+    histories: { type: Array, default: () => {} },
   },
 }
 </script>
