@@ -3,15 +3,8 @@
     <h1>くらガチャ</h1>
 
     <v-row>
+      <Result :result="result" />
       <v-col cols="12" align="center">
-        <v-img
-          :src="result.imageURL"
-          :alt="result.name"
-          max-height="260"
-          max-width="330"
-        />
-
-        <p class="result">{{ result.name }}</p>
         <div class="my-2" align="center">
           <v-btn
             x-large
@@ -82,11 +75,13 @@
 import menu from '../assets/output.json'
 import Summary from '../components/Summary.vue'
 import History from '../components/History.vue'
+import Result from '../components/Result.vue'
 
 export default {
   components: {
     Summary,
     History,
+    Result,
   },
   data() {
     return {
@@ -228,14 +223,5 @@ export default {
 .menu-count {
   font-size: 1rem;
   font-weight: normal;
-}
-
-.image {
-  max-height: 260px;
-}
-
-.result {
-  height: 86px;
-  font-size: 1.8rem;
 }
 </style>

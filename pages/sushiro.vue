@@ -3,15 +3,8 @@
     <h1>スシローガチャ</h1>
 
     <v-row>
+      <Result :result="result" />
       <v-col cols="12" align="center">
-        <v-img
-          :src="result.imageURL"
-          :alt="result.name"
-          height="260"
-          width="330"
-        />
-
-        <p class="result">{{ result.name }}</p>
         <div class="my-2" align="center">
           <v-btn
             x-large
@@ -78,28 +71,53 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import menu from '../assets/sushiro.json'
 import Summary from '../components/Summary.vue'
 import History from '../components/History.vue'
+import Result from '../components/Result.vue'
 
-export default {
+interface Menu {
+  category: string
+  name: string
+  price: string
+  calorie: string
+  imageURL: string
+}
+
+interface History {
+  no: number
+  menu: Menu
+}
+
+export default Vue.extend({
+  name: 'Sushiro',
+
   components: {
     Summary,
     History,
+    Result,
   },
   data() {
     return {
       count: 0,
-      result: { name: '', imageURL: '' },
+      result: {
+        category: '',
+        name: '',
+        price: '',
+        calorie: '',
+        imageURL: '',
+      } as Menu,
       menu,
-      categories: [],
+      categories: [] as string[],
       checkedCategories: [1, 2, 3, 4, 5, 6],
       // areas: [],
       // checkedAreas: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
       prices: ['100円', '101 〜 200円', '201円以上'],
       checkedPrices: [1, 2, 3],
-      histories: [],
+      histories: [] as History[],
     }
   },
   created() {
@@ -107,10 +125,10 @@ export default {
     // this.areas = this.getAreas()
   },
   methods: {
-    getCategories() {
+    getCategories(): any[] {
       return Array.from(new Set(this.menu.map((item) => item.category)))
     },
-    createCategoryItems(categories) {
+    createCategoryItems(categories: string[]) {
       const children = categories.map(function (item, index) {
         return { id: index + 1, name: item }
       })
@@ -128,11 +146,18 @@ export default {
     getPrices() {
       return Array.from(new Set(this.menu.map((item) => item.price)))
     },
-    createPricesItems(prices) {
+    createPricesItems(prices: string[]) {
       const children = prices.map(function (item, index) {
         return { id: index + 1, name: item }
       })
       return [{ id: 0, name: '全価格', children }]
+    },
+    toInt(str: string): number {
+      const parsed = parseInt(str, 10)
+      if (isNaN(parsed)) {
+        return 0
+      }
+      return parsed
     },
     filteredMenuList() {
       const selectedCategories = this.categories.filter((_, index) =>
@@ -145,15 +170,8 @@ export default {
         this.checkedPrices.includes(index + 1)
       )
 
-      function filterByPrice(priceStr) {
-        const toInt = (str) => {
-          const parsed = parseInt(str, 10)
-          if (isNaN(parsed)) {
-            return 0
-          }
-          return parsed
-        }
-        const price = toInt(priceStr)
+      const filterByPrice = (priceStr: string) => {
+        const price = this.toInt(priceStr)
 
         for (const slectedPriceLabel of selectedPrices) {
           switch (slectedPriceLabel) {
@@ -182,7 +200,7 @@ export default {
         .filter((item) => filterByPrice(item.price))
     },
     pressButton() {
-      if (this.filteredMenuList() < 1) {
+      if (this.filteredMenuList().length < 1) {
         return
       }
       this.count++
@@ -190,47 +208,27 @@ export default {
       this.result = this.getRandomMenu(this.filteredMenuList())
       this.histories.push({ no: this.count, menu: this.result })
     },
-    getRandomMenu(filtered) {
+    getRandomMenu(filtered: Menu[]) {
       const randomNumber = this.getRandomNumber(filtered.length)
       return filtered[randomNumber]
     },
-    getRandomNumber(max) {
+    getRandomNumber(max: number) {
       return Math.floor(Math.random() * max)
     },
-    sumPrice() {
-      const toInt = (str) => {
-        const parsed = parseInt(str, 10)
-        if (isNaN(parsed)) {
-          return 0
-        }
-        return parsed
-      }
 
-      return this.histories.reduce((p, x) => p + toInt(x.menu.price), 0)
+    sumPrice() {
+      return this.histories.reduce((p, x) => p + this.toInt(x.menu.price), 0)
     },
     sumCalorie() {
-      const toInt = (str) => {
-        const parsed = parseInt(str, 10)
-        if (isNaN(parsed)) {
-          return 0
-        }
-        return parsed
-      }
-
-      return this.histories.reduce((p, x) => p + toInt(x.menu.calorie), 0)
+      return this.histories.reduce((p, x) => p + this.toInt(x.menu.calorie), 0)
     },
   },
-}
+})
 </script>
 
 <style scoped>
 .menu-count {
   font-size: 1rem;
   font-weight: normal;
-}
-
-.result {
-  height: 86px;
-  font-size: 1.8rem;
 }
 </style>
