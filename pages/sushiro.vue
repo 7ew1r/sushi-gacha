@@ -8,16 +8,9 @@
 
     <v-row>
       <Result :result="result" />
-      <v-col cols="12" align="center">
-        <div class="my-2" align="center">
-          <v-btn
-            x-large
-            color="primary"
-            :disabled="filteredMenuList().length < 1"
-            @click="pressButton"
-            >ガチャを回す</v-btn
-          >
-        </div>
+      <GachaButton :disable="disableGachaButton()" :click="pressButton" />
+      <v-col class="text-center">
+        <v-switch v-model="allowDuplicate" label="有り" />
       </v-col>
     </v-row>
     <v-row>
@@ -106,6 +99,8 @@ export default Vue.extend({
   },
   data() {
     return {
+      allowDuplicate: true,
+
       count: 0,
       result: {
         category: '',
@@ -129,6 +124,25 @@ export default Vue.extend({
     // this.areas = this.getAreas()
   },
   methods: {
+    disableGachaButton() {
+      if (this.filteredMenuList().length < 1) {
+        return true
+      }
+
+      if (this.allowDuplicate === false) {
+        const historyList = Array.from(
+          new Set(this.histories.map((item) => item.menu))
+        )
+        const searchMenuList = this.filteredMenuList().filter(
+          (i) => !historyList.includes(i)
+        )
+        if (searchMenuList.length < 1) {
+          return true
+        }
+      }
+
+      return false
+    },
     getCategories(): any[] {
       return Array.from(new Set(this.menu.map((item) => item.category)))
     },
@@ -207,9 +221,23 @@ export default Vue.extend({
       if (this.filteredMenuList().length < 1) {
         return
       }
+      let searchMenuList = this.filteredMenuList()
+
+      if (this.allowDuplicate === false) {
+        const historyList = Array.from(
+          new Set(this.histories.map((item) => item.menu))
+        )
+        searchMenuList = this.filteredMenuList().filter(
+          (i) => !historyList.includes(i)
+        )
+        if (searchMenuList.length < 1) {
+          return
+        }
+      }
+
       this.count++
 
-      this.result = this.getRandomMenu(this.filteredMenuList())
+      this.result = this.getRandomMenu(searchMenuList)
       this.histories.push({ no: this.count, menu: this.result })
     },
     getRandomMenu(filtered: Menu[]) {

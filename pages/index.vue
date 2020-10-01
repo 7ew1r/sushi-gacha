@@ -8,10 +8,10 @@
     </v-tabs>
     <v-row>
       <Result :result="result" />
-      <GachaButton
-        :disable="filteredMenuList().length < 1"
-        :click="pressButton"
-      />
+      <GachaButton :disable="disableGachaButton()" :click="pressButton" />
+      <v-col class="text-center">
+        <v-switch v-model="allowDuplicate" label="有り" />
+      </v-col>
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -68,14 +68,29 @@
   </v-container>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 import menu from '../assets/output.json'
 import Summary from '../components/Summary.vue'
 import History from '../components/History.vue'
 import Result from '../components/Result.vue'
 import GachaButton from '../components/GachaButton.vue'
 
-export default {
+interface Menu {
+  category: string
+  name: string
+  price: string
+  calorie: string
+  imageURL: string
+}
+
+interface History {
+  no: number
+  menu: Menu
+}
+
+export default Vue.extend({
   components: {
     Summary,
     History,
@@ -84,16 +99,23 @@ export default {
   },
   data() {
     return {
+      allowDuplicate: true,
       count: 0,
-      result: { name: '', imageURL: '' },
+      result: {
+        category: '',
+        name: '',
+        price: '',
+        calorie: '',
+        imageURL: '',
+      } as Menu,
       menu,
-      categories: [],
+      categories: [] as string[],
       checkedCategories: [1, 2, 3, 4, 5, 6, 7],
-      areas: [],
+      areas: [] as string[],
       checkedAreas: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
       prices: ['100円', '101 〜 200円', '201円以上'],
       checkedPrices: [1, 2, 3],
-      histories: [],
+      histories: [] as History[],
     }
   },
   created() {
@@ -101,10 +123,29 @@ export default {
     this.areas = this.getAreas()
   },
   methods: {
+    disableGachaButton() {
+      if (this.filteredMenuList().length < 1) {
+        return true
+      }
+
+      if (this.allowDuplicate === false) {
+        const historyList = Array.from(
+          new Set(this.histories.map((item) => item.menu))
+        )
+        const searchMenuList = this.filteredMenuList().filter(
+          (i) => !historyList.includes(i)
+        )
+        if (searchMenuList.length < 1) {
+          return true
+        }
+      }
+
+      return false
+    },
     getCategories() {
       return Array.from(new Set(this.menu.map((item) => item.category)))
     },
-    createCategoryItems(categories) {
+    createCategoryItems(categories: string[]) {
       const children = categories.map(function (item, index) {
         return { id: index + 1, name: item }
       })
@@ -113,7 +154,7 @@ export default {
     getAreas() {
       return Array.from(new Set(this.menu.map((item) => item.area)))
     },
-    createAreaItems(areas) {
+    createAreaItems(areas: string[]) {
       const children = areas.map(function (item, index) {
         return { id: index + 1, name: item }
       })
@@ -122,7 +163,7 @@ export default {
     getPrices() {
       return Array.from(new Set(this.menu.map((item) => item.price)))
     },
-    createPricesItems(prices) {
+    createPricesItems(prices: string[]) {
       const children = prices.map(function (item, index) {
         return { id: index + 1, name: item }
       })
@@ -139,8 +180,8 @@ export default {
         this.checkedPrices.includes(index + 1)
       )
 
-      function filterByPrice(priceStr) {
-        const toInt = (str) => {
+      function filterByPrice(priceStr: string) {
+        const toInt = (str: string) => {
           const parsed = parseInt(str, 10)
           if (isNaN(parsed)) {
             return 0
@@ -177,23 +218,37 @@ export default {
         .filter((item) => filterByPrice(item.price))
     },
     pressButton() {
-      if (this.filteredMenuList() < 1) {
+      if (this.filteredMenuList().length < 1) {
         return
+      }
+
+      let searchMenuList = this.filteredMenuList()
+
+      if (this.allowDuplicate === false) {
+        const historyList = Array.from(
+          new Set(this.histories.map((item) => item.menu))
+        )
+        searchMenuList = this.filteredMenuList().filter(
+          (i) => !historyList.includes(i)
+        )
+        if (searchMenuList.length < 1) {
+          return
+        }
       }
       this.count++
 
-      this.result = this.getRandomMenu(this.filteredMenuList())
+      this.result = this.getRandomMenu(searchMenuList)
       this.histories.push({ no: this.count, menu: this.result })
     },
-    getRandomMenu(filtered) {
+    getRandomMenu(filtered: Menu[]) {
       const randomNumber = this.getRandomNumber(filtered.length)
       return filtered[randomNumber]
     },
-    getRandomNumber(max) {
+    getRandomNumber(max: number) {
       return Math.floor(Math.random() * max)
     },
     sumPrice() {
-      const toInt = (str) => {
+      const toInt = (str: string) => {
         const parsed = parseInt(str, 10)
         if (isNaN(parsed)) {
           return 0
@@ -204,7 +259,7 @@ export default {
       return this.histories.reduce((p, x) => p + toInt(x.menu.price), 0)
     },
     sumCalorie() {
-      const toInt = (str) => {
+      const toInt = (str: string) => {
         const parsed = parseInt(str, 10)
         if (isNaN(parsed)) {
           return 0
@@ -215,7 +270,7 @@ export default {
       return this.histories.reduce((p, x) => p + toInt(x.menu.calorie), 0)
     },
   },
-}
+})
 </script>
 
 <style scoped>
