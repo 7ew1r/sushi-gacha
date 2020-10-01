@@ -10,7 +10,10 @@
       <Result :result="result" />
       <GachaButton :disable="disableGachaButton()" :click="pressButton" />
       <v-col class="text-center">
-        <v-switch v-model="allowDuplicate" label="有り" />
+        <v-switch
+          v-model="allowDuplicate"
+          :label="allowDuplicate ? '重複有り' : '重複なし'"
+        />
       </v-col>
     </v-row>
     <v-row>
