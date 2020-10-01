@@ -2,19 +2,16 @@
   <v-container>
     <h1>くらガチャ</h1>
 
+    <v-tabs>
+      <v-tab to="/">くら寿司</v-tab>
+      <v-tab to="/sushiro">スシロー</v-tab>
+    </v-tabs>
     <v-row>
       <Result :result="result" />
-      <v-col cols="12" align="center">
-        <div class="my-2" align="center">
-          <v-btn
-            x-large
-            color="primary"
-            :disabled="filteredMenuList().length < 1"
-            @click="pressButton"
-            >ガチャを回す</v-btn
-          >
-        </div>
-      </v-col>
+      <GachaButton
+        :disable="filteredMenuList().length < 1"
+        :click="pressButton"
+      />
     </v-row>
     <v-row>
       <v-col cols="12">
@@ -76,12 +73,14 @@ import menu from '../assets/output.json'
 import Summary from '../components/Summary.vue'
 import History from '../components/History.vue'
 import Result from '../components/Result.vue'
+import GachaButton from '../components/GachaButton.vue'
 
 export default {
   components: {
     Summary,
     History,
     Result,
+    GachaButton,
   },
   data() {
     return {

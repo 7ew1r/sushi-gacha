@@ -1,6 +1,10 @@
 <template>
   <v-container>
     <h1>スシローガチャ</h1>
+    <v-tabs>
+      <v-tab to="/">くら寿司</v-tab>
+      <v-tab to="/sushiro">スシロー</v-tab>
+    </v-tabs>
 
     <v-row>
       <Result :result="result" />
