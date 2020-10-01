@@ -247,28 +247,6 @@ export default Vue.extend({
     getRandomNumber(max: number) {
       return Math.floor(Math.random() * max)
     },
-    sumPrice() {
-      const toInt = (str: string) => {
-        const parsed = parseInt(str, 10)
-        if (isNaN(parsed)) {
-          return 0
-        }
-        return parsed
-      }
-
-      return this.histories.reduce((p, x) => p + toInt(x.menu.price), 0)
-    },
-    sumCalorie() {
-      const toInt = (str: string) => {
-        const parsed = parseInt(str, 10)
-        if (isNaN(parsed)) {
-          return 0
-        }
-        return parsed
-      }
-
-      return this.histories.reduce((p, x) => p + toInt(x.menu.calorie), 0)
-    },
   },
 })
 </script>

@@ -247,13 +247,6 @@ export default Vue.extend({
     getRandomNumber(max: number) {
       return Math.floor(Math.random() * max)
     },
-
-    sumPrice() {
-      return this.histories.reduce((p, x) => p + this.toInt(x.menu.price), 0)
-    },
-    sumCalorie() {
-      return this.histories.reduce((p, x) => p + this.toInt(x.menu.calorie), 0)
-    },
   },
 })
 </script>
