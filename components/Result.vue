@@ -18,7 +18,7 @@ import Vue from 'vue'
 export default Vue.extend({
   props: {
     result: {
-      type: Array,
+      type: Object,
       default: () => {},
     },
   },

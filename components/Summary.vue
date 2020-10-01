@@ -25,13 +25,28 @@
   </v-row>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue, { PropOptions } from 'vue'
+
+interface Menu {
+  category: string
+  name: string
+  price: string
+  calorie: string
+  imageURL: string
+}
+
+interface History {
+  no: number
+  menu: Menu
+}
+
+export default Vue.extend({
   props: {
-    histories: { type: Array, default: () => {} },
+    histories: { type: Array, default: () => {} } as PropOptions<History[]>,
   },
   methods: {
-    toInt(str) {
+    toInt(str: string) {
       const parsed = parseInt(str, 10)
       if (isNaN(parsed)) {
         return 0
@@ -45,7 +60,7 @@ export default {
       return this.histories.reduce((p, x) => p + this.toInt(x.menu.calorie), 0)
     },
   },
-}
+})
 </script>
 
 <style scoped>
