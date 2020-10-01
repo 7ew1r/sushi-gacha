@@ -1,11 +1,11 @@
 <template>
   <v-container>
-    <h1>くらガチャ</h1>
-
+    <h1>スシローガチャ</h1>
     <v-tabs>
       <v-tab to="/">くら寿司</v-tab>
       <v-tab to="/sushiro">スシロー</v-tab>
     </v-tabs>
+
     <v-row>
       <Result :result="result" />
       <GachaButton :disable="disableGachaButton()" :click="pressButton" />
@@ -37,7 +37,7 @@
                 :selectable="true"
               />
 
-              <v-col cols="12">
+              <!-- <v-col cols="12">
                 <h3>提供エリア</h3>
               </v-col>
 
@@ -45,7 +45,7 @@
                 v-model="checkedAreas"
                 :items="createAreaItems(areas)"
                 :selectable="true"
-              />
+              /> -->
 
               <v-col cols="12">
                 <h3>価格</h3>
@@ -71,11 +71,10 @@
 <script lang="ts">
 import Vue from 'vue'
 
-import menu from '../assets/output.json'
+import menu from '../assets/sushiro.json'
 import Summary from '../components/Summary.vue'
 import History from '../components/History.vue'
 import Result from '../components/Result.vue'
-import GachaButton from '../components/GachaButton.vue'
 
 interface Menu {
   category: string
@@ -91,15 +90,17 @@ interface History {
 }
 
 export default Vue.extend({
+  name: 'Sushiro',
+
   components: {
     Summary,
     History,
     Result,
-    GachaButton,
   },
   data() {
     return {
       allowDuplicate: true,
+
       count: 0,
       result: {
         category: '',
@@ -110,9 +111,9 @@ export default Vue.extend({
       } as Menu,
       menu,
       categories: [] as string[],
-      checkedCategories: [1, 2, 3, 4, 5, 6, 7],
-      areas: [] as string[],
-      checkedAreas: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+      checkedCategories: [1, 2, 3, 4, 5, 6],
+      // areas: [],
+      // checkedAreas: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
       prices: ['100円', '101 〜 200円', '201円以上'],
       checkedPrices: [1, 2, 3],
       histories: [] as History[],
@@ -120,7 +121,7 @@ export default Vue.extend({
   },
   created() {
     this.categories = this.getCategories()
-    this.areas = this.getAreas()
+    // this.areas = this.getAreas()
   },
   methods: {
     disableGachaButton() {
@@ -142,7 +143,7 @@ export default Vue.extend({
 
       return false
     },
-    getCategories() {
+    getCategories(): any[] {
       return Array.from(new Set(this.menu.map((item) => item.category)))
     },
     createCategoryItems(categories: string[]) {
@@ -151,15 +152,15 @@ export default Vue.extend({
       })
       return [{ id: 0, name: '全カテゴリー', children }]
     },
-    getAreas() {
-      return Array.from(new Set(this.menu.map((item) => item.area)))
-    },
-    createAreaItems(areas: string[]) {
-      const children = areas.map(function (item, index) {
-        return { id: index + 1, name: item }
-      })
-      return [{ id: 0, name: '全提供エリア', children }]
-    },
+    // getAreas() {
+    //   return Array.from(new Set(this.menu.map((item) => item.area)))
+    // },
+    // createAreaItems(areas) {
+    //   const children = areas.map(function (item, index) {
+    //     return { id: index + 1, name: item }
+    //   })
+    //   return [{ id: 0, name: '全提供エリア', children }]
+    // },
     getPrices() {
       return Array.from(new Set(this.menu.map((item) => item.price)))
     },
@@ -169,26 +170,26 @@ export default Vue.extend({
       })
       return [{ id: 0, name: '全価格', children }]
     },
+    toInt(str: string): number {
+      const parsed = parseInt(str, 10)
+      if (isNaN(parsed)) {
+        return 0
+      }
+      return parsed
+    },
     filteredMenuList() {
       const selectedCategories = this.categories.filter((_, index) =>
         this.checkedCategories.includes(index + 1)
       )
-      const selectedAreas = this.areas.filter((_, index) =>
-        this.checkedAreas.includes(index + 1)
-      )
+      // const selectedAreas = this.areas.filter((_, index) =>
+      //   this.checkedAreas.includes(index + 1)
+      // )
       const selectedPrices = this.prices.filter((_, index) =>
         this.checkedPrices.includes(index + 1)
       )
 
-      function filterByPrice(priceStr: string) {
-        const toInt = (str: string) => {
-          const parsed = parseInt(str, 10)
-          if (isNaN(parsed)) {
-            return 0
-          }
-          return parsed
-        }
-        const price = toInt(priceStr)
+      const filterByPrice = (priceStr: string) => {
+        const price = this.toInt(priceStr)
 
         for (const slectedPriceLabel of selectedPrices) {
           switch (slectedPriceLabel) {
@@ -214,14 +215,12 @@ export default Vue.extend({
 
       return menu
         .filter((item) => selectedCategories.includes(item.category))
-        .filter((item) => selectedAreas.includes(item.area))
         .filter((item) => filterByPrice(item.price))
     },
     pressButton() {
       if (this.filteredMenuList().length < 1) {
         return
       }
-
       let searchMenuList = this.filteredMenuList()
 
       if (this.allowDuplicate === false) {
@@ -235,6 +234,7 @@ export default Vue.extend({
           return
         }
       }
+
       this.count++
 
       this.result = this.getRandomMenu(searchMenuList)
