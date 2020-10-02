@@ -6,15 +6,15 @@
 
         <v-card-text class="text--primary">
           <v-row class="text-right">
-            <v-col class="pr-10"
+            <v-col sm="4" cols="12" class="pr-10"
               ><span class="value">{{ histories.length }}</span>
               <span class="unit">皿 </span></v-col
             >
-            <v-col class="pr-10"
+            <v-col sm="4" cols="12" class="pr-10"
               ><span class="value">{{ sumPrice() }}</span>
               <span class="unit">円(税抜)</span>
             </v-col>
-            <v-col class="pr-10"
+            <v-col sm="4" cols="12" class="pr-10"
               ><span class="value">{{ sumCalorie() }}</span>
               <span class="unit">kcal</span></v-col
             >
