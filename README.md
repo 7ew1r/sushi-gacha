@@ -1,5 +1,7 @@
 # KuraGacha
 
+![GitHub Pages](https://github.com/7ew1r/kura-gacha/workflows/GitHub%20Pages/badge.svg)
+
 ## Build Setup
 
 ```bash
